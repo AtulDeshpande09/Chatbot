@@ -1,51 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 
-function App()  {
+function App() {
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi! I’m AgriBot 🌱. How can I help you today?" }
+    { from: 'bot', text: 'Hi! I’m AgriBot 🌱. How can I help you today?' }
   ]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { from: "user", text: input };
+    const userMessage = { from: 'user', text: input };
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    setInput('');
 
     try {
-      const res = await fetch("http://localhost:5173/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input })
+      const res = await fetch('http://127.0.0.1:5000/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input }),
+        mode: 'cors'
       });
 
       const data = await res.json();
-      const botMessage = { from: "bot", text: data.reply };
+      const botMessage = { from: 'bot', text: data.reply };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { from: "bot", text: "Error fetching response." }
+        { from: 'bot', text: 'Error fetching response.' }
       ]);
     }
   };
 
   return (
-    <div className="min-h-screen bg-green-50 flex flex-col items-center p-4">
-      <h1 className="text-3xl font-bold text-green-800 mb-6">AgriBot 🌾</h1>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex flex-col items-center justify-between p-6">
+      <h1 className="text-5xl font-extrabold text-green-700 mb-6 tracking-wide flex items-center gap-2">
+        AgriBot <span className="text-3xl">🌾</span>
+      </h1>
 
-      <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-4 flex-1 overflow-y-auto mb-4 space-y-2">
+      <div className="w-full max-w-2xl flex flex-col flex-1 bg-white rounded-2xl shadow-lg p-6 mb-4 overflow-y-auto space-y-4">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`p-3 rounded-lg max-w-[80%] ${
-              msg.from === "bot"
-                ? "bg-green-100 text-left self-start"
-                : "bg-blue-100 text-right self-end ml-auto"
+            className={`rounded-xl px-4 py-3 max-w-[75%] text-sm sm:text-base leading-relaxed shadow-sm ${
+              msg.from === 'bot'
+                ? 'bg-green-200 text-left self-start'
+                : 'bg-blue-200 text-right self-end ml-auto'
             }`}
           >
             {msg.text}
@@ -53,17 +54,17 @@ function App()  {
         ))}
       </div>
 
-      <div className="w-full max-w-2xl flex gap-2">
+      <div className="w-full max-w-2xl flex gap-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about crops, soil, fertilizers..."
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 text-sm sm:text-base"
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
         <button
           onClick={handleSend}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition"
         >
           Send
         </button>
@@ -71,3 +72,5 @@ function App()  {
     </div>
   );
 }
+
+export default App;
